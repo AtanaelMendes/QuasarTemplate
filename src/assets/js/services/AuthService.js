@@ -1,0 +1,40 @@
+import AuthAPI from "../api/AuthAPI";
+import PasswordCredential from "../auth/PasswordCredential";
+import AccountAPI from "../api/AccountAPI";
+import AccountRepository from "../repository/AccountRepository";
+
+
+export default class AuthService{
+	#accountRepository;
+
+	constructor() {
+		this.accountRepository = new AccountRepository();
+	}
+
+	login(credentials){
+		if(!(credentials instanceof PasswordCredential)){
+			throw new Error('Objeto não é do tipo PasswordCredential!');
+		}
+
+		return new Promise((resolve, reject) => {
+			AuthAPI.login(credentials.toString()).then(response => {
+				localStorage.setItem('auth.token', response.data.access_token);
+				localStorage.setItem('auth.refresh_token', response.data.refresh_token);
+
+				AccountAPI.getAccountInfo().then(response => {
+					this.accountRepository.save(response.data).then(() => {
+						resolve();
+					});
+				});
+
+			}).catch(error => {
+				if (error.response.status === 401) {
+					reject(new Error("Email e/ou senha incorretos!"));
+				} else {
+					reject(error);
+				}
+			})
+		});
+	}
+
+}
