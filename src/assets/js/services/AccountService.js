@@ -19,7 +19,7 @@ export default class AccountService{
 				if(response.status === 200){
 					resolve(response.data)
 				}else{
-					reject(response)
+					reject(response);
 				}
 			}).catch(error => {
 				if(error.response.status === 422){
@@ -31,7 +31,7 @@ export default class AccountService{
 					}
 					reject(new Error(msg));
 				}else{
-					reject(error)
+					reject(error);
 				}
 			})
 		});
@@ -49,7 +49,7 @@ export default class AccountService{
 				if(error.response.status === 422){
 					reject(new Error("Senha incorreta!"));
 				}else{
-					reject(error)
+					reject(error);
 				}
 			})
 		});
